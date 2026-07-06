@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import logo from './assets/72c2b448b96ddcc95a287061f77d06f530046401.png'
 import aboutKoushan from './assets/aboutKoushan.png'
 import qobaAlSa5raa from './assets/QobaAlSa5raa.jpg'
@@ -10,6 +10,9 @@ import ka3k from './assets/Ka3k.jpg'
 import whyKoushan from './assets/WhyKoushan.png'
 
 function App() {
+  const [activeSection, setActiveSection] = useState('home');
+  const [isScrolled, setIsScrolled] = useState(false);
+
   useEffect(() => {
     const cards = document.querySelectorAll(".feature-card-single");
 
@@ -30,18 +33,44 @@ function App() {
     return () => observer.disconnect();
   }, []);
 
+  useEffect(() => {
+    const sections = ['about', 'features', 'why-koushan'];
+
+    const handleScroll = () => {
+      const scrollPosition = window.scrollY + 180;
+      let currentSection = 'home';
+
+      setIsScrolled(window.scrollY > 30);
+
+      sections.forEach((sectionId) => {
+        const section = document.getElementById(sectionId);
+
+        if (section && scrollPosition >= section.offsetTop) {
+          currentSection = sectionId;
+        }
+      });
+
+      setActiveSection(currentSection);
+    };
+
+    handleScroll();
+    window.addEventListener('scroll', handleScroll);
+
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
   return (
     <>
-      <header className="navbar">
+      <header className={`navbar ${isScrolled ? 'scrolled' : ''}`}>
         <div className="logo">
           <img src={logo} alt="كوشان" />
         </div>
 
         <nav className="nav-links">
-          <a href="#" className="nav-link active">الرئيسية</a>
-          <a href="#about" className="nav-link">عن التطبيق</a>
-          <a href="#features" className="nav-link">مميزات التطبيق</a>
-          <a href="#why-koushan" className="nav-link">لماذا كوشان؟</a>
+          <a href="#" className={`nav-link ${activeSection === 'home' ? 'active' : ''}`}>الرئيسية</a>
+          <a href="#about" className={`nav-link ${activeSection === 'about' ? 'active' : ''}`}>عن التطبيق</a>
+          <a href="#features" className={`nav-link ${activeSection === 'features' ? 'active' : ''}`}>مميزات التطبيق</a>
+          <a href="#why-koushan" className={`nav-link ${activeSection === 'why-koushan' ? 'active' : ''}`}>لماذا كوشان؟</a>
         </nav>
 
         <div className="download">
