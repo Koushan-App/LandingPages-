@@ -34,29 +34,32 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const sections = ['about', 'features', 'why-koushan'];
-
     const handleScroll = () => {
-      const scrollPosition = window.scrollY + 180;
-      let currentSection = 'home';
-
       setIsScrolled(window.scrollY > 30);
+    };
 
-      sections.forEach((sectionId) => {
-        const section = document.getElementById(sectionId);
-
-        if (section && scrollPosition >= section.offsetTop) {
-          currentSection = sectionId;
+    const sectionObserver = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          setActiveSection(entry.target.id || 'home');
         }
       });
+    }, {
+      rootMargin: '-45% 0px -45% 0px',
+      threshold: 0
+    });
 
-      setActiveSection(currentSection);
-    };
+    document.querySelectorAll('.hero, #about, #features, #why-koushan').forEach((section) => {
+      sectionObserver.observe(section);
+    });
 
     handleScroll();
     window.addEventListener('scroll', handleScroll);
 
-    return () => window.removeEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      sectionObserver.disconnect();
+    };
   }, []);
 
   return (
@@ -78,7 +81,7 @@ function App() {
         </div>
       </header>
 
-      <section className="hero">
+      <section id="home" className="hero">
         <div className="hero-content">
           <p className="hero-quote">
             <span className="line-one">&#10078; جـسرٌ رقمـي يـربطـك بوطـنك </span>
